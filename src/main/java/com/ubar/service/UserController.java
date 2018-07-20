@@ -78,4 +78,18 @@ public class UserController {
 		logger.debug("email found: " + found);
 		return found;
 	}
+	
+	@RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public boolean register(@RequestBody User user) {
+		try {
+			userDAO.save(user);
+			logger.debug("User saved to Database!");
+			return true;
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+	}
+	
 }
