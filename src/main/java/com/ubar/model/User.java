@@ -1,4 +1,4 @@
-package com.ubar.user.service;
+package com.ubar.model;
 
 /**
  * @author Dimitris.Anastasopoulos
