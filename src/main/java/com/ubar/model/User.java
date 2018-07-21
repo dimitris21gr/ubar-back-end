@@ -8,9 +8,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 	
 	@Id
@@ -20,7 +23,7 @@ public class User {
 	@NotNull
 	private String username, password, email;
 	
-	private String name, surname, address, phone, type;
+	private String name, surname, address, phone;
 
 	public long getId() {
 		return id;
@@ -84,14 +87,6 @@ public class User {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 }
