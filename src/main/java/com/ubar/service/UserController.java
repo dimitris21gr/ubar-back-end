@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ubar.dao.UserDAO;
 import com.ubar.model.User;
+import com.ubar.user.dto.LoginRequest;
 import com.ubar.user.dto.LoginResponse;
 
 /**
@@ -35,10 +36,10 @@ public class UserController {
 	private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public LoginResponse login(@RequestBody User loginUser) {
+	public LoginResponse login(@RequestBody LoginRequest loginUser) {
 		LoginResponse responseUser = new LoginResponse(-1, null, null);
 		try {
-			Optional<User> user = userDAO.findByUsernameAndPasswordAndType(loginUser.getUsername(), loginUser.getPassword(), loginUser.getType());
+			Optional<User> user = userDAO.findByUsernameAndPassword(loginUser.getUsername(), loginUser.getPassword());
 			if (user.isPresent())
 				responseUser = modelMapper.map(user.get(), LoginResponse.class);
 			logger.debug(responseUser.toString());

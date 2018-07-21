@@ -39,13 +39,13 @@ public class Trip {
 	@NotNull
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@ManyToOne
-    @JoinColumn(name = "passenger_id")
+    @JoinColumn(name = "passenger")
 	private User passenger;
 
 	@NotNull
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@ManyToOne
-    @JoinColumn(name = "driver_id")
+    @JoinColumn(name = "driver")
 	private User driver;
 
 	public long getId() {

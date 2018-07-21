@@ -11,11 +11,9 @@ public class LoginResponse {
 	private String username, type;
 	
 	public LoginResponse() {
-		super();
 	}
 	
 	public LoginResponse(long id, String username, String type) {
-		super();
 		this.id = id;
 		this.username = username;
 		this.type = type;
