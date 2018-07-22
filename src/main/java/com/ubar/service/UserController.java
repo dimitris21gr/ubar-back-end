@@ -49,21 +49,18 @@ public class UserController {
 	public LoginResponse login(@RequestBody LoginRequest loginUser) {
 		LoginResponse responseUser = new LoginResponse(-1, null, null);
 		try {
-			Optional<User> user = userDAO.findByUsernameAndPassword(loginUser.getUsername(), loginUser.getPassword());
-			if (user.isPresent()) {
-				if (loginUser.getType().equals("passenger")) {
-					Optional<Passenger> passenger = passengerDAO.findById(user.get().getId());
-					if (passenger.isPresent()) {
-						responseUser = modelMapper.map(user.get(), LoginResponse.class);
-						responseUser.setType("passenger");
-					}
+			if (loginUser.getType().equals("passenger")) {
+				Optional<Passenger> user = passengerDAO.findByUsernameAndPassword(loginUser.getUsername(), loginUser.getPassword());
+				if (user.isPresent()) {
+					responseUser = modelMapper.map(user.get(), LoginResponse.class);
+					responseUser.setType("passenger");
 				}
-				else if (loginUser.getType().equals("driver")) {
-					Optional<Driver> driver = driverDAO.findById(user.get().getId());
-					if (driver.isPresent()) {
-						responseUser = modelMapper.map(user.get(), LoginResponse.class);
-						responseUser.setType("driver");
-					}
+			}
+			else if  (loginUser.getType().equals("driver")) {
+				Optional<Driver> user = driverDAO.findByUsernameAndPassword(loginUser.getUsername(), loginUser.getPassword());
+				if (user.isPresent()) {
+					responseUser = modelMapper.map(user.get(), LoginResponse.class);
+					responseUser.setType("driver");
 				}
 			}
 			logger.debug(responseUser.toString());

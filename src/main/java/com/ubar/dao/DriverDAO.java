@@ -4,8 +4,6 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
-import org.springframework.data.repository.CrudRepository;
-
 import com.ubar.model.Driver;
 
 /**
@@ -13,7 +11,7 @@ import com.ubar.model.Driver;
  *
  */
 @Transactional
-public interface DriverDAO extends CrudRepository<Driver, Long>{
+public interface DriverDAO extends UserBaseDAO<Driver>{
 	
 	public Optional<Driver> findById(long id);
 
