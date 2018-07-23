@@ -101,11 +101,21 @@ public class UserController {
 		return found;
 	}
 	
-	@RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public boolean register(@RequestBody User user) {
+	@RequestMapping(value = "/register/{type}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public boolean register(@RequestBody User user, @PathVariable String type) {
 		try {
-			userDAO.save(user);
-			logger.debug("User saved to Database!");
+			if (type.equals("driver")) {
+				Driver driver = modelMapper.map(user, Driver.class);
+				driverDAO.save(driver);
+				logger.debug("User - driver saved to Database!");
+			}
+			else if (type.equals("passenger")) {
+				Passenger passenger = modelMapper.map(user, Passenger.class);
+				passengerDAO.save(passenger);
+				logger.debug("User - passenger saved to Database!");
+			}
+			else
+				return false;
 			return true;
 		}
 		catch(Exception ex) {
