@@ -21,6 +21,7 @@ import com.ubar.model.Passenger;
 import com.ubar.model.User;
 import com.ubar.user.dto.LoginRequest;
 import com.ubar.user.dto.LoginResponse;
+import com.ubar.user.dto.PasswordRequest;
 
 /**
  * All services regarding the user entity
@@ -122,6 +123,29 @@ public class UserController {
 			ex.printStackTrace();
 			return false;
 		}
+	}
+	
+	@RequestMapping(value = "/changePassword", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public boolean changePassword(@RequestBody PasswordRequest pr) {
+		boolean done = false;
+		try {
+			Optional<User> user = userDAO.findById(pr.getId());
+			if (user.isPresent()) {
+				user.get().setPassword(pr.getPassword());
+				userDAO.save(user.get());
+				done = true;
+				logger.debug("Password changed!");
+			}
+			else {
+				logger.debug("No such user");
+				done = false;
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			done = false;
+		}
+		return done;
 	}
 	
 }

@@ -13,6 +13,8 @@ import com.ubar.model.User;
 @Transactional
 public interface UserDAO extends UserBaseDAO<User>{
 	
+	public Optional<User> findById(long id);
+	
 	public Optional<User> findByUsername(String username);
 	
 	public Optional<User> findByEmail(String email);
