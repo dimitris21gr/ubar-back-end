@@ -19,9 +19,11 @@ import com.ubar.dao.UserDAO;
 import com.ubar.model.Driver;
 import com.ubar.model.Passenger;
 import com.ubar.model.User;
+import com.ubar.user.dto.AvatarRequest;
 import com.ubar.user.dto.LoginRequest;
 import com.ubar.user.dto.LoginResponse;
 import com.ubar.user.dto.PasswordRequest;
+import com.ubar.utilities.Image;
 
 /**
  * All services regarding the user entity
@@ -32,46 +34,46 @@ import com.ubar.user.dto.PasswordRequest;
 @RestController
 @RequestMapping("/user/service")
 public class UserController {
-	
+
 	@Autowired
 	UserDAO userDAO;
-	
+
 	@Autowired
 	PassengerDAO passengerDAO;
-	
+
 	@Autowired
 	DriverDAO driverDAO;
-	
+
 	private ModelMapper modelMapper = new ModelMapper();
-	
+
 	private final static Logger logger = LoggerFactory.getLogger(UserController.class);
-	
+
 	@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public LoginResponse login(@RequestBody LoginRequest loginUser) {
 		LoginResponse responseUser = new LoginResponse(-1, null, null);
 		try {
 			if (loginUser.getType().equals("passenger")) {
-				Optional<Passenger> user = passengerDAO.findByUsernameAndPassword(loginUser.getUsername(), loginUser.getPassword());
+				Optional<Passenger> user = passengerDAO.findByUsernameAndPassword(loginUser.getUsername(),
+						loginUser.getPassword());
 				if (user.isPresent()) {
 					responseUser = modelMapper.map(user.get(), LoginResponse.class);
 					responseUser.setType("passenger");
 				}
-			}
-			else if  (loginUser.getType().equals("driver")) {
-				Optional<Driver> user = driverDAO.findByUsernameAndPassword(loginUser.getUsername(), loginUser.getPassword());
+			} else if (loginUser.getType().equals("driver")) {
+				Optional<Driver> user = driverDAO.findByUsernameAndPassword(loginUser.getUsername(),
+						loginUser.getPassword());
 				if (user.isPresent()) {
 					responseUser = modelMapper.map(user.get(), LoginResponse.class);
 					responseUser.setType("driver");
 				}
 			}
 			logger.debug(responseUser.toString());
-		}
-		catch(Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return responseUser;
 	}
-	
+
 	@RequestMapping(value = "/checkUsername/{username}", method = RequestMethod.GET)
 	public boolean usernameExists(@PathVariable String username) {
 		boolean found = false;
@@ -79,8 +81,7 @@ public class UserController {
 			Optional<User> user = userDAO.findByUsername(username);
 			if (user.isPresent())
 				found = true;
-		}
-		catch(Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		logger.debug("username found: " + found);
@@ -94,37 +95,34 @@ public class UserController {
 			Optional<User> user = userDAO.findByEmail(email);
 			if (user.isPresent())
 				found = true;
-		}
-		catch(Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		logger.debug("email found: " + found);
 		return found;
 	}
-	
+
 	@RequestMapping(value = "/register/{type}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public boolean register(@RequestBody User user, @PathVariable String type) {
 		try {
+			user.setAvatar(Image.DEFAULT_PATH);
 			if (type.equals("driver")) {
 				Driver driver = modelMapper.map(user, Driver.class);
 				driverDAO.save(driver);
 				logger.debug("User - driver saved to Database!");
-			}
-			else if (type.equals("passenger")) {
+			} else if (type.equals("passenger")) {
 				Passenger passenger = modelMapper.map(user, Passenger.class);
 				passengerDAO.save(passenger);
 				logger.debug("User - passenger saved to Database!");
-			}
-			else
+			} else
 				return false;
 			return true;
-		}
-		catch(Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			return false;
 		}
 	}
-	
+
 	@RequestMapping(value = "/changePassword", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public boolean changePassword(@RequestBody PasswordRequest pr) {
 		boolean done = false;
@@ -135,17 +133,40 @@ public class UserController {
 				userDAO.save(user.get());
 				done = true;
 				logger.debug("Password changed!");
-			}
-			else {
+			} else {
 				logger.debug("No such user");
 				done = false;
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			done = false;
 		}
 		return done;
 	}
-	
+
+	@RequestMapping(value = "/uploadAvatar", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public boolean uploadAvatar(@RequestBody AvatarRequest avatar) {
+		boolean status = false;
+		String name = "avatar_" + avatar.getId() + avatar.getType();
+		try {
+			Optional<User> user = userDAO.findById(avatar.getId());
+			if (user.isPresent()) {
+				//If user has not default avatar
+				if (!user.get().getAvatar().equals(Image.DEFAULT_PATH)) {
+					Image.delete(user.get().getAvatar());
+					user.get().setAvatar(Image.DEFAULT_PATH);
+				}
+				Image.decoder(avatar.getAvatar(), Image.PATH + name);
+				user.get().setAvatar(Image.PATH + name);
+				userDAO.save(user.get());
+				logger.debug("Avatar uploaded!");
+				status = true;
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			status = false;
+		}
+		return status;
+	}
+
 }

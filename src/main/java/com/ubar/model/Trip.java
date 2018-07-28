@@ -40,13 +40,13 @@ public class Trip {
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@ManyToOne
     @JoinColumn(name = "passenger")
-	private User passenger;
+	private Passenger passenger;
 
 	@NotNull
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	@ManyToOne
     @JoinColumn(name = "driver")
-	private User driver;
+	private Driver driver;
 
 	public long getId() {
 		return id;
@@ -121,19 +121,19 @@ public class Trip {
 		this.destLat = destLat;
 	}
 
-	public User getPassenger() {
+	public Passenger getPassenger() {
 		return passenger;
 	}
 
-	public void setPassenger(User passenger) {
+	public void setPassenger(Passenger passenger) {
 		this.passenger = passenger;
 	}
 
-	public User getDriver() {
+	public Driver getDriver() {
 		return driver;
 	}
 
-	public void setDriver(User driver) {
+	public void setDriver(Driver driver) {
 		this.driver = driver;
 	}
 	

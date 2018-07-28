@@ -23,7 +23,7 @@ public class User {
 	@NotNull
 	private String username, password, email;
 	
-	private String name, surname, address, phone;
+	private String name, surname, address, phone, avatar;
 
 	public long getId() {
 		return id;
@@ -89,4 +89,12 @@ public class User {
 		this.phone = phone;
 	}
 
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+	
 }
