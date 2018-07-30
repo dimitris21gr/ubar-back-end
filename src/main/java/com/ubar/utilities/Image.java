@@ -13,9 +13,9 @@ import java.util.Base64;
  */
 public class Image {
 	
-	public static final String PATH = "./src/main/resources/avatars/";
+	public static final String PATH = "./src/main/resources/static/avatars/";
 	
-	public static final String DEFAULT_PATH = "./src/main/resources/avatars/default.png";
+	public static final String DEFAULT_PATH = "./src/main/resources/static/avatars/default.png";
  
 	public static String encoder(String imagePath) {
 		String base64Image = "";
