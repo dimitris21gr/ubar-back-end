@@ -16,13 +16,14 @@ import org.hibernate.annotations.OnDeleteAction;
  *
  */
 @Entity
-public class Car {
+@OnDelete(action = OnDeleteAction.NO_ACTION)
+public class Vehicle {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
-	private String manufacturer, model, color;
+	private String manufacturer, model, color, licensePlate, type;
 	
 	private int year;
 	
@@ -62,6 +63,22 @@ public class Car {
 
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public String getLicensePlate() {
+		return licensePlate;
+	}
+
+	public void setLicensePlate(String licensePlate) {
+		this.licensePlate = licensePlate;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public int getYear() {
