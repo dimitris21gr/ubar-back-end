@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ubar.dao.DriverDAO;
 import com.ubar.dao.PassengerDAO;
 import com.ubar.dao.UserDAO;
+import com.ubar.dao.VehicleDAO;
 import com.ubar.model.Driver;
 import com.ubar.model.Passenger;
 import com.ubar.model.User;
+import com.ubar.model.Vehicle;
 import com.ubar.user.dto.AvatarRequest;
+import com.ubar.user.dto.DriverRegisterRequest;
 import com.ubar.user.dto.LoginRequest;
 import com.ubar.user.dto.LoginResponse;
 import com.ubar.user.dto.PasswordRequest;
@@ -40,6 +43,9 @@ public class UserController {
 
 	@Autowired
 	PassengerDAO passengerDAO;
+
+	@Autowired
+	VehicleDAO vehicleDAO;
 
 	@Autowired
 	DriverDAO driverDAO;
@@ -102,25 +108,39 @@ public class UserController {
 		return found;
 	}
 
-	@RequestMapping(value = "/register/{type}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public boolean register(@RequestBody User user, @PathVariable String type) {
+	@RequestMapping(value = "/register/passenger", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public boolean registerPassenger(@RequestBody User user) {
+		boolean status = false;
 		try {
 			user.setAvatar(Image.DEFAULT_PATH);
-			if (type.equals("driver")) {
-				Driver driver = modelMapper.map(user, Driver.class);
-				driverDAO.save(driver);
-				logger.debug("User - driver saved to Database!");
-			} else if (type.equals("passenger")) {
-				Passenger passenger = modelMapper.map(user, Passenger.class);
-				passengerDAO.save(passenger);
-				logger.debug("User - passenger saved to Database!");
-			} else
-				return false;
-			return true;
+			Passenger passenger = modelMapper.map(user, Passenger.class);
+			passengerDAO.save(passenger);
+			status = true;
+			logger.debug("User - passenger saved to Database!");
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return false;
+			status = false;
 		}
+		return status;
+	}
+
+	@RequestMapping(value = "/register/driver", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public boolean registerDriver(@RequestBody DriverRegisterRequest request) {
+		boolean status = false;
+		try {
+			Driver driver = modelMapper.map(request, Driver.class);
+			driver.setAvatar(Image.DEFAULT_PATH);
+			driverDAO.save(driver);
+			Vehicle vehicle = modelMapper.map(request, Vehicle.class);
+			vehicle.setDriver(driver);
+			vehicleDAO.save(vehicle);
+			status = true;
+			logger.debug("User - driver saved to Database!");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			status = false;
+		}
+		return status;
 	}
 
 	@RequestMapping(value = "/changePassword", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -151,7 +171,7 @@ public class UserController {
 		try {
 			Optional<User> user = userDAO.findById(avatar.getId());
 			if (user.isPresent()) {
-				//If user has not default avatar
+				// If user has not default avatar
 				if (!user.get().getAvatar().equals(Image.DEFAULT_PATH)) {
 					Image.delete(user.get().getAvatar());
 					user.get().setAvatar(Image.DEFAULT_PATH);
