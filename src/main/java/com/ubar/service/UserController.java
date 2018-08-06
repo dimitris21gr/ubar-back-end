@@ -26,6 +26,7 @@ import com.ubar.user.dto.DriverRegisterRequest;
 import com.ubar.user.dto.LoginRequest;
 import com.ubar.user.dto.LoginResponse;
 import com.ubar.user.dto.PasswordRequest;
+import com.ubar.user.dto.UserProfileResponse;
 import com.ubar.utilities.Image;
 
 /**
@@ -187,6 +188,24 @@ public class UserController {
 			status = false;
 		}
 		return status;
+	}
+	
+	@RequestMapping(value = "/profile/{id}", method = RequestMethod.GET)
+	public UserProfileResponse getProfile(@PathVariable long id) {
+		UserProfileResponse response = new UserProfileResponse();
+		try {
+			Optional<User> user = userDAO.findById(id);
+			if (user.isPresent()) {
+				response = modelMapper.map(user.get(), UserProfileResponse.class);
+				logger.debug("User profile found!");
+			}
+			else
+				logger.debug("User profile NOT found!");
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		return response;
 	}
 
 }
