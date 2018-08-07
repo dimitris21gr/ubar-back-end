@@ -36,7 +36,7 @@ public class Image {
 	public static void decoder(String base64Image, String pathFile) {
 		try (FileOutputStream imageOutFile = new FileOutputStream(pathFile)) {
 			// Converting a Base64 String into Image byte array
-			byte[] imageByteArray = Base64.getDecoder().decode(base64Image);
+			byte[] imageByteArray  = Base64.getDecoder().decode(base64Image);
 			imageOutFile.write(imageByteArray);
 		} catch (FileNotFoundException e) {
 			System.out.println("Image not found" + e);

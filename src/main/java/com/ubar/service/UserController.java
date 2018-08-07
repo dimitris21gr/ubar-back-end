@@ -197,6 +197,8 @@ public class UserController {
 			Optional<User> user = userDAO.findById(id);
 			if (user.isPresent()) {
 				response = modelMapper.map(user.get(), UserProfileResponse.class);
+				String str = response.getAvatar();
+				response.setAvatar(str.substring(str.indexOf("avatars/")));
 				logger.debug("User profile found!");
 			}
 			else
